@@ -6,12 +6,14 @@ const {
     patch, 
     delete_user
 } = require("../controllers/user");
+const validators = require("./validators");
+const { validateFields } = require("../middleWares/validate-flieds");
 
 const router = Router();
 
 router.get("/", get);
 
-router.post("/", post);
+router.post("/", [validators(), validateFields], post);
 
 router.put("/:id", put);
 
