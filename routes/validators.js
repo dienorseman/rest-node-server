@@ -6,7 +6,7 @@ const validators =() => {
         check("password", "Password must be 6 characters long").isLength({ min: 6 }),
         check("email", "Email is required").isEmail(),
         check("role", "Role is required").not().isEmpty(),
-        check("role", "Role is not valid").isIn(["ADMIN_ROLE", "USER_ROLE"]),
+        // check("role", "Role is not valid").isIn(["ADMIN_ROLE", "USER_ROLE"]),
     ]
 }
 
