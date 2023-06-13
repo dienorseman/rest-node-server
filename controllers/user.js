@@ -1,14 +1,32 @@
 const { request, response } = require('express');
 const bcryptjs = require('bcryptjs');
-const User = require('../models/user');
+const User = require('../models/user');;
 
 
+const get = async ( req = request, res = response ) => {
 
-const get = ( req = request, res = response ) => {
+    let { limit = 5, from = 0 } = req.query;
+
+    const maxLimit = 100;
+    
+    if ( limit > maxLimit ) {
+        limit = maxLimit;
+    }
+    
+    let users = global.serverInstance.randomizedUserList;
+
+    users = users.slice( from, limit );
+
+    if ( users.length === 0 ) {
+        res = response.status(404).json({
+            msg: 'No users found'
+        })
+    }
+
     res.json({
-        ok: true,
-        msg: 'get - user'
+        users
     })
+
 }
 
 const post = async( req = request, res = response ) => {
@@ -17,19 +35,11 @@ const post = async( req = request, res = response ) => {
 
     const user = new User( { name, email, password, role } )
 
-    const emailExists = await User.findOne( { email } )
-
-    if ( emailExists ) {
-        return res.status(400).json({
-            msg: 'Email already exists'
-        })
-    }
-
     const salt = bcryptjs.genSaltSync(10);
 
     user.password = bcryptjs.hashSync( password, salt );
 
-    await user.save()
+    await Promise.all([global.serverInstance.listUsers(), user.save()]);
 
     res.json({
         user
@@ -37,11 +47,20 @@ const post = async( req = request, res = response ) => {
 
 }
 
-const put = ( req = request, res = response ) => {
+const put = async ( req = request, res = response ) => {
+
     const id = req.params.id
+    const { _id, _v, password, google, ...rest } = req.body;
+
+    if ( password ) {
+        const salt = bcryptjs.genSaltSync(10);
+        rest.password = bcryptjs.hashSync( password, salt );
+    }
+
+    const resp = await Promise.all([global.serverInstance.listUsers(), User.findByIdAndUpdate( id, rest, { new: true } )]);
+
     res.json({
-        msg: 'put - user',  
-        id
+        user: resp[1]
     })
 }
 

@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const { dbConnection } = require('../database/config');
+const { randomizeUserDb } = require('../helpers/randomize-user-db');
 class Server {
 
     constructor() {
@@ -13,7 +14,10 @@ class Server {
         this.middlewares();
 
         this.routes();
-    
+        
+        this.randomizedUserList = [];
+        this.listUsers();
+        
     }
 
     async dbConnect() {
@@ -37,6 +41,15 @@ class Server {
             console.log(`listenging on ${port}`);
         })
     }
+
+    listUsers() {
+        randomizeUserDb()
+            .then( users => {
+                this.randomizedUserList = users;
+            }
+        )
+    }
+
 }
 
 module.exports = Server

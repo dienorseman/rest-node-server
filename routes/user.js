@@ -1,21 +1,24 @@
 const { Router } = require("express");
+
+const { userValidators, putUserValidators } = require('./validators');
+
+
 const { 
     get, 
     post, 
     put, 
     patch, 
-    delete_user
+    delete_user,
 } = require("../controllers/user");
-const validators = require("./validators");
-const { validateFields } = require("../middleWares/validate-flieds");
+
 
 const router = Router();
 
 router.get("/", get);
 
-router.post("/", [validators(), validateFields], post);
+router.post("/", userValidators(), post);
 
-router.put("/:id", put);
+router.put("/:id", putUserValidators() ,put);
 
 router.patch("/", patch);
 
