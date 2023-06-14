@@ -13,7 +13,7 @@ const get = async ( req = request, res = response ) => {
         limit = maxLimit;
     }
     
-    let users = global.serverInstance.randomizedUserList;
+    let users = await global.serverInstance.randomizedUserList;
 
     users = users.slice( from, limit );
 
@@ -71,8 +71,10 @@ const patch = ( req = request, res = response ) => {
 }
 
 const delete_user = ( req = request, res = response ) => {
+    const { id } = req.params;
     res.json({
-        msg: 'delete - user'
+        msg: 'delete - user',
+        id
     })
 }
 
