@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const { userValidators, putUserValidators } = require('./validators');
+const { userValidators, putUserValidators, deleteUserValidators } = require('./validators');
 
 
 const { 
@@ -18,10 +18,10 @@ router.get("/", get);
 
 router.post("/", userValidators(), post);
 
-router.put("/:id", putUserValidators() ,put);
+router.put("/:id", putUserValidators(), put);
 
 router.patch("/", patch);
 
-router.delete("/", delete_user);
+router.delete("/:id", deleteUserValidators(), delete_user);
 
 module.exports = router;

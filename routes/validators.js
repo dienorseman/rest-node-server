@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 
 const { isRoleValid, emailExists, userExistsById } = require( "../helpers/db-validators");
 const { validateFields } = require("../middleWares/validate-flieds");
+const { validateJWT } = require("../middleWares/validate-jwt");
 
 
 const userValidators =() => {
@@ -26,7 +27,27 @@ const putUserValidators = () => {
     ]
 }
 
+const deleteUserValidators = () => {
+    return [
+        validateJWT,
+        check("id", "Id is not valid").isMongoId(),
+        check("id").custom( userExistsById ),
+        validateFields, 
+    ]
+}
+
+const postLoginValidators = () => {
+    return [
+        check("email", "Email is required").isEmail(),
+        check("password", "Passwrd is required").not().isEmpty(),
+        validateFields
+    ]
+}
+
+
 module.exports = {
     userValidators,
-    putUserValidators
+    putUserValidators,
+    deleteUserValidators,
+    postLoginValidators,
 }

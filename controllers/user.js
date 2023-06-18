@@ -1,6 +1,6 @@
 const { request, response } = require('express');
 const bcryptjs = require('bcryptjs');
-const User = require('../models/user');;
+const User = require('../models/user');
 
 
 const get = async ( req = request, res = response ) => {
@@ -57,7 +57,7 @@ const put = async ( req = request, res = response ) => {
         rest.password = bcryptjs.hashSync( password, salt );
     }
 
-    const resp = await Promise.all([global.serverInstance.listUsers(), User.findByIdAndUpdate( id, rest, { new: true } )]);
+    const resp = await Promise.all( [global.serverInstance.listUsers(), User.findByIdAndUpdate( id, rest, { new: true } )] );
 
     res.json({
         user: resp[1]
@@ -70,13 +70,30 @@ const patch = ( req = request, res = response ) => {
     })
 }
 
-const delete_user = ( req = request, res = response ) => {
-    const { id } = req.params;
-    res.json({
-        msg: 'delete - user',
-        id
-    })
-}
+const delete_user = async ( req = request, res = response ) => {
+
+    const id = req.params.id;
+
+    try {
+
+        const resp = await Promise.all( [global.serverInstance.listUsers(), User.findByIdAndUpdate( id, { state: false } )] );
+
+        const authUser = req.user;
+
+        res.json({
+            user: resp[1],
+            authUser
+        })  
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error deleting user',
+            error
+        })
+    }
+        
+    }
 
 module.exports = {
     get,
