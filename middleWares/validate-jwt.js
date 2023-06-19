@@ -7,20 +7,27 @@ const User = require('../models/user');
 
 const validateJWT = async ( req, res = response, next ) => {
 
-    const token = req.header('x-token');
+    // const token = req.header('x-token');
+
+    let token = req.header('Authorization');
+
     
-    if ( !token ) {
+    if ( !token || !token.startsWith('Bearer')) {
         return res.status(401).json({
-            msg: 'No token provided'
+            msg: 'No valid token provided'
         })
     }
+
+    token = token.substring(7);
 
     try {
         
             const { uid } = jwt.verify( token, process.env.SECRETORPRIVATEKEY );
 
+
             const user = await User.findById( uid );
 
+            
             if ( !user ) {
                 return res.status(401).json({
                     msg: 'User does not exist'
@@ -33,18 +40,15 @@ const validateJWT = async ( req, res = response, next ) => {
                 })
             }
 
-            console.log(user);
-
-            req.user = user;
-
             req.uid = uid;
 
+            req.user = user;
 
             next(); 
     
         }
         catch (error) {
-            console.log(error);
+            // console.log(error);
             return res.status(401).json({
                 msg: 'Invalid token'
             })

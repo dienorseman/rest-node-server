@@ -1,8 +1,10 @@
 const { check } = require("express-validator");
 
-const { isRoleValid, emailExists, userExistsById } = require( "../helpers/db-validators");
+const { emailExists, userExistsById, isRoleValid } = require( "../helpers/db-validators");
 const { validateFields } = require("../middleWares/validate-flieds");
 const { validateJWT } = require("../middleWares/validate-jwt");
+const { checkUserState, } = require("../middleWares/check-user-state");
+const { isAdminRole } = require("../middleWares/validate-roles");
 
 
 const userValidators =() => {
@@ -30,8 +32,10 @@ const putUserValidators = () => {
 const deleteUserValidators = () => {
     return [
         validateJWT,
+        isAdminRole,
         check("id", "Id is not valid").isMongoId(),
         check("id").custom( userExistsById ),
+        checkUserState,
         validateFields, 
     ]
 }
@@ -40,7 +44,7 @@ const postLoginValidators = () => {
     return [
         check("email", "Email is required").isEmail(),
         check("password", "Passwrd is required").not().isEmpty(),
-        validateFields
+        validateFields,
     ]
 }
 

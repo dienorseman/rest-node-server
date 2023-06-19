@@ -22,8 +22,21 @@ const userExistsById = async ( id = "" ) => {
     }
 };
 
+const userIsActiveById = async (uid = "") => {
+  const userIsActive = await User.findById(uid);
+
+  if (!userIsActive) {
+    throw new Error(`User with id ${uid} does not exist`);
+  }
+
+  if (!userIsActive.state) {
+    throw new Error(`User with id ${uid} is inactive`);
+  }
+}
+
 module.exports = {
     isRoleValid,
     emailExists,
-    userExistsById
+    userExistsById,
+    userIsActiveById
 };

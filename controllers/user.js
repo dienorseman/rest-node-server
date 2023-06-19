@@ -81,7 +81,7 @@ const delete_user = async ( req = request, res = response ) => {
         const authUser = req.user;
 
         res.json({
-            user: resp[1],
+            message: `User ${ resp[1].name } deleted`,
             authUser
         })  
 
@@ -93,7 +93,7 @@ const delete_user = async ( req = request, res = response ) => {
         })
     }
         
-    }
+}
 
 module.exports = {
     get,
