@@ -8,5 +8,7 @@ const port = process.env.PORT
 
 global.serverInstance = server
 
+console.clear()
+
 server.listen( port )
 

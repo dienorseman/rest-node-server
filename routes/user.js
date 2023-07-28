@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const { userValidators, putUserValidators, deleteUserValidators } = require('./validators');
+const { userValidators, putUserValidators, deleteUserValidators, admingetUsersValidators } = require('./validators');
 
 
 const { 
@@ -9,10 +9,13 @@ const {
     put, 
     patch, 
     delete_user,
+    adminGet,
 } = require("../controllers/user");
 
 
 const router = Router();
+
+router.get("/admin", admingetUsersValidators(), adminGet);
 
 router.get("/", get);
 
