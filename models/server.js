@@ -1,8 +1,8 @@
-const express = require("express");
-const cors = require("cors");
-const { dbConnection } = require("../database/config");
-const { randomizeUserDb } = require("../helpers/randomize-user-db");
-const fileUpload = require("express-fileupload");
+const express               = require("express");
+const cors                  = require("cors");
+const { dbConnection }      = require("../database/config");
+const { randomizeUserDb }   = require('../helpers')
+const fileUpload            = require("express-fileupload");
 
 class Server {
   constructor() {
@@ -41,7 +41,9 @@ class Server {
 
     // request logger
     this.app.use((req, res, next) => {
-      console.log(`${req.method} request to ${req.url} at ${new Date()} from ${req.ip}`);
+      console.log(
+        `${req.method} request to ${req.url} at ${new Date()} from ${req.ip}`
+      );
       next();
     });
 

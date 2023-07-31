@@ -1,14 +1,17 @@
-const { Router } = require("express");
-const { getFiles, uploadFile } = require("../controllers/uploads");
+const { Router }                            = require("express");
+const { getFiles, uploadFile, updateImage } = require("../controllers/uploads");
+const { updateImageValidators }             = require("./validators");
+const { validateFile }                      = require("../middleWares");
 
 
 
 const router = Router();
 
 
-router.get( '/', getFiles)
+router.get( '/', getFiles);
 
-router.post( '/', uploadFile )
+router.post( '/', validateFile, uploadFile );
 
+router.put( '/:collection/:id', updateImageValidators(), updateImage)
 
 module.exports = router;

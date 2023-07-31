@@ -1,4 +1,4 @@
-const { check } = require("express-validator");
+const { check }       = require("express-validator");
 
 const {
   emailExists,
@@ -6,7 +6,8 @@ const {
   isRoleValid,
   categoryExistsById,
   productExistsById,
-} = require("../helpers/db-validators");
+  allowedCollections
+}                     = require("../helpers");
 const {
   validateFields,
   validateJWT,
@@ -14,7 +15,9 @@ const {
   hasRole,
   isAdminRole,
   JWTNotEmpty,
-} = require("../middleWares");
+  validateFile,
+}                     = require("../middleWares");
+
 
 const admingetUsersValidators = () => {
   return [validateJWT, isAdminRole];
@@ -137,6 +140,15 @@ const deleteProductValidators = () => {
   ];
 };
 
+const updateImageValidators = () => {
+  return [
+    check("id", "Id is not valid").isMongoId(),
+    check('collection').custom( ( c ) => allowedCollections( c, ['users','products'] ) ),
+    validateFile,
+    validateFields,
+  ];
+}
+
 module.exports = {
   admingetUsersValidators,
   userValidators,
@@ -151,4 +163,5 @@ module.exports = {
   createProductValidators,
   updateProductValidators,
   deleteProductValidators,
+  updateImageValidators,
 };

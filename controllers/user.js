@@ -1,6 +1,6 @@
 const { request, response } = require("express");
-const bcryptjs = require("bcryptjs");
-const User = require("../models/user");
+const bcryptjs              = require("bcryptjs");
+const User                  = require("../models/user");
 
 const adminGet = async (req = request, res = response) => {
   try {

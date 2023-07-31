@@ -1,5 +1,5 @@
 const { request, response } = require("express");
-const { Category } = require("../models");
+const { Category }          = require("../models");
 
 const getCategories = (req = request, res = response) => {
   try {

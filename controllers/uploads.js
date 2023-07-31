@@ -1,6 +1,8 @@
-const path = require('path');
-const { request, response } = require("express");
-
+const path                          = require('path');
+const fs                            = require('fs');
+const { request, response }         = require('express');
+const { uploadFile : uploadHelper } = require('../helpers');
+const { User, Product }             = require('../models');
 
 
 const getFiles = ( req = request, res = response ) => {
@@ -9,31 +11,67 @@ const getFiles = ( req = request, res = response ) => {
     })
 }
 
-const uploadFile = ( req = request, res = response ) => {
+const uploadFile = async ( req = request, res = response ) => {
 
-    if (!req.files || Object.keys(req.files).length === 0 || !req.files.file){
-        res.status(400).json({msg: 'No uploaded files on the request'})
-        return;
+    const validExtensions = ['txt', 'md'];
+    
+    try { 
+        const uploadedFile = await uploadHelper(req.files, validExtensions);
+        res.json({msg: `file uploaded: ${uploadedFile}` })
+    } catch (error) {
+        res.status(400).json({msg: error})     
     }
 
-    const file = req.files.file;
-
-
-    const uploadPath = path.join(__dirname + '../../uploads/' + file.name);
-
-    file.mv(uploadPath, err => {
-        if( err ) {
-            return res.status(500).json(err);
-        }
-
-        res.json({
-            msg: `uploaded to ${uploadPath}` 
-        })
-    })
 }
 
+const updateImage = async ( req = request, res = response ) => {
+
+    const { id, collection} = req.params;
+
+    let model;
+
+    switch ( collection ) {
+        case 'users':
+            model = await User.findById(id);
+            if( !model ) {
+                return res.status(400).json({ msg: `There is no user with such id (${id})`});
+            }
+            break;
+        case 'products':
+            model = await Product.findById(id);
+            if( !model ) {
+                return res.status(400).json({ msg: `There is no product with such id (${id})`});
+            }
+            break;
+        default:
+            return res.status(500).json({ msg: 'I forgot to validate this' })
+    }
+
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+    try { 
+
+        if ( model.img ) {
+            const imgPath = path.join(__dirname, '../uploads/', collection, model.img);
+            if ( fs.existsSync( imgPath ) ) {
+                fs.unlinkSync( imgPath );
+            }
+        }
+
+        const uploadedFile = await uploadHelper(req.files, validExtensions, `${collection}`);
+        model.img = uploadedFile;
+        await model.save();
+
+        res.json({ msg: model })
+
+    } catch (error) {
+        res.status(400).json({msg: error})     
+    }
+
+}
 
 module.exports = {
     getFiles,
-    uploadFile
+    uploadFile,
+    updateImage
 }
