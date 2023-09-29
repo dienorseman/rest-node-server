@@ -95,7 +95,20 @@ const googleSignIn = async (req = request, res = response) => {
   }
 };
 
+const refreshToken = async ( req, res ) => {
+  const { user } = req;
+
+  const newToken = await generateJWT( user.id );
+
+  res.json({
+    user,
+    newToken
+  })
+
+}
+
 module.exports = {
   post,
   googleSignIn,
+  refreshToken
 };

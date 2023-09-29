@@ -70,6 +70,10 @@ const googleLoginValidators = () => {
   return [JWTNotEmpty, validateFields];
 };
 
+const JWTValidators = () => {
+  return [validateJWT]
+}
+
 const postCategoryValidators = () => {
   return [
     validateJWT,
@@ -173,4 +177,5 @@ module.exports = {
   deleteProductValidators,
   updateImageValidators,
   getImageValidators,
+  JWTValidators
 };

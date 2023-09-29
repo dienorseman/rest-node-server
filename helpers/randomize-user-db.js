@@ -13,8 +13,7 @@ const randomizeUserDb = async () => {
 
     await Promise.all(promises);
 
-    return randomUsers;
-    
+    return randomUsers; 
 }
 
 

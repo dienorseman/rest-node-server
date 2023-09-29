@@ -1,31 +1,41 @@
 const express               = require("express");
 const cors                  = require("cors");
-const { dbConnection }      = require("../database/config");
-const { randomizeUserDb }   = require('../helpers')
 const fileUpload            = require("express-fileupload");
+const { createServer }      = require('http');
+
+const { dbConnection }      = require("../database/config");
+const { randomizeUserDb }   = require('../helpers');
+const { socketController }  = require("../sockets/controller");
 
 class Server {
   constructor() {
     this.app = express();
 
+    this.server = createServer( this.app );
+
+    this.i0 = require('socket.io')( this.server );
+
     this.paths = {
-      auth: "/api/auth",
-      categories: "/api/categories",
-      users: "/api/user",
-      products: "/api/products",
+      auth: '/api/auth',
+      categories: '/api/categories',
+      users: '/api/user',
+      products: '/api/products',
       search: '/api/search',
-      uploads: "/api/uploads",
+      uploads: '/api/uploads',
+      public: '/'
     };
 
     this.dbConnect();
 
-    //middlewares
+
     this.middlewares();
 
     this.routes();
 
     this.randomizedUserList = [];
     this.listUsers();
+
+    this.sockets();
   }
 
   async dbConnect() {
@@ -37,10 +47,10 @@ class Server {
     this.app.use(cors());
 
     // body read and parse
-    this.app.use(express.json());
+    this.app.use( express.json() );
 
     // request logger
-    this.app.use((req, res, next) => {
+    this.app.use(( req, res, next ) => {
       console.log(
         `${req.method} request to ${req.url} at ${new Date()} from ${req.ip}`
       );
@@ -65,16 +75,21 @@ class Server {
     this.app.use(this.paths.products, require("../routes/products"));
     this.app.use(this.paths.search, require("../routes/search"));
     this.app.use(this.paths.uploads, require("../routes/uploads"));
+    this.app.use(this.paths.public, require("../routes/public"));
   }
 
-  listen(port) {
-    this.app.listen(port, () => {
-      console.log(`listenging on ${port}`);
+  sockets() {
+    this.i0.on( 'connection', socketController );
+  }
+
+  listen( port ) {
+    this.server.listen(port, () => {
+      console.log(`Server running on port ${port}`);
     });
   }
 
   listUsers() {
-    randomizeUserDb().then((users) => {
+    randomizeUserDb().then(( users ) => {
       this.randomizedUserList = users;
     });
   }
