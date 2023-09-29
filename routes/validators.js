@@ -140,6 +140,14 @@ const deleteProductValidators = () => {
   ];
 };
 
+const getImageValidators = () => {
+  return [
+    check("id", "Id is not valid").isMongoId(),
+    check('collection').custom( ( c ) => allowedCollections( c, ['users','products'] ) ),
+    validateFields,
+  ]
+}
+
 const updateImageValidators = () => {
   return [
     check("id", "Id is not valid").isMongoId(),
@@ -164,4 +172,5 @@ module.exports = {
   updateProductValidators,
   deleteProductValidators,
   updateImageValidators,
+  getImageValidators,
 };
