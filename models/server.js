@@ -13,7 +13,7 @@ class Server {
 
     this.server = createServer( this.app );
 
-    this.i0 = require('socket.io')( this.server );
+    this.io = require('socket.io')( this.server );
 
     this.paths = {
       auth: '/api/auth',
@@ -50,12 +50,12 @@ class Server {
     this.app.use( express.json() );
 
     // request logger
-    this.app.use(( req, res, next ) => {
-      console.log(
-        `${req.method} request to ${req.url} at ${new Date()} from ${req.ip}`
-      );
-      next();
-    });
+    // this.app.use(( req, res, next ) => {
+    //   console.log(
+    //     `${req.method} request to ${req.url} at ${new Date()} from ${req.ip}`
+    //   );
+    //   next();
+    // });
 
     //public directory
     this.app.use(express.static("public"));
@@ -79,7 +79,8 @@ class Server {
   }
 
   sockets() {
-    this.i0.on( 'connection', socketController );
+    // this.io is undefined in the socketController function
+    this.io.on( 'connection', ( socket ) => socketController( socket, this.io ) );
   }
 
   listen( port ) {

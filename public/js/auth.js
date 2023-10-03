@@ -1,6 +1,6 @@
 function loadPage() {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token.length > 10) {
         document.getElementById('signout-google').style.display = 'block';
         console.log('token', token);
         location.href = 'chat';

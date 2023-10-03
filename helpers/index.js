@@ -4,6 +4,7 @@ const googleVerify          = require('./google-verify');
 const randomizeUserDB       = require('./randomize-user-db');
 const uploadFile            = require('./upload-file');
 const allowedCollections    = require('./allowed-collections');
+const verifyJwt             = require('./verify-jwt');
 
 module.exports = {
     ...dbValidators,
@@ -12,4 +13,5 @@ module.exports = {
     ...randomizeUserDB,
     ...uploadFile,
     ...allowedCollections,
+    ...verifyJwt,
 }
